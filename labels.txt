@@ -1,0 +1,12 @@
+0 Upma
+1 Biriyani
+2 Milk
+3 Oat Meal
+4 Dosa
+5 Chapati
+6 Sadhya
+7 Jalebi
+8 Fish Curry
+9 Egg
+10 Apple
+11 Mango

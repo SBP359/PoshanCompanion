@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Poshan Companion Report</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 0;
+      color: #222;
+      font-size: 15px;
+      line-height: 1.3;
+    }
+    .back-button {
+      display: inline-block;
+      padding: 8px 15px;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+      margin-right: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    .back-button:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+    .header {
+      background: linear-gradient(90deg, #16a085 0%, #1abc9c 100%);
+      color: #fff;
+      padding: 18px 0 12px 0;
+      text-align: left;
+      border-bottom: 3px solid #138d75;
+      padding-left: 40px;
+    }
+    .header img {
+      width: 90px;
+      height: auto;
+      margin-bottom: 6px;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .header h1 {
+      margin: 0 0 0 16px;
+      font-size: 1.5em;
+      letter-spacing: 0.5px;
+      font-weight: 700;
+      text-shadow: 1px 1px 2px #138d7533;
+      display: inline-block;
+      vertical-align: middle;
+      color: #222;
+    }
+    .header .date {
+      font-size:1em;
+      font-weight:400;
+      margin-top:4px;
+      color:#222;
+      margin-left: 8px;
+      display: block;
+    }
+    .container {
+      max-width: 800px;
+      margin: 18px auto 18px 40px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 12px rgba(22,160,133,0.07);
+      padding: 18px 18px 12px 18px;
+      text-align: left;
+    }
+    .summary-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 18px;
+      background: #fafbfc;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .summary-table th, .summary-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #e0e0e0;
+      text-align: left;
+      color: #222;
+      font-size: 1em;
+    }
+    .summary-table th {
+      background: #16a085;
+      color: #fff;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+    }
+    .summary-table tr:last-child td {
+      border-bottom: none;
+    }
+    .badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 0.95em;
+      font-weight: 600;
+      margin-left: 8px;
+    }
+    .badge-low {
+      background: #ffebee;
+      color: #c62828;
+    }
+    .badge-normal {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+    .badge-high {
+      background: #fff3e0;
+      color: #e65100;
+    }
+    .section {
+      margin-bottom: 18px;
+    }
+    .section-title {
+      color: #138d75;
+      font-size: 1.1em;
+      margin-bottom: 8px;
+      border-bottom: 1.5px solid #16a08533;
+      padding-bottom: 3px;
+      font-weight: 700;
+    }
+    .graph-container {
+      text-align: left;
+      margin-bottom: 8px;
+    }
+    .graph {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+      box-shadow: 0 1px 4px #16a08511;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 8px;
+      background: #fafbfc;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 7px 6px;
+      border-bottom: 1px solid #e0e0e0;
+      text-align: left;
+      color: #222;
+    }
+    th {
+      background: #16a085;
+      color: #fff;
+      font-weight: 600;
+      font-size: 1em;
+      letter-spacing: 0.2px;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    tr:nth-child(even) {
+      background: #f8f9fa;
+    }
+    .nutrient-status {
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      background: #f9f9f9;
+      border: 1px solid #e0e0e0;
+      color: #222;
+    }
+    .status-low {
+      background: #ffebee;
+      color: #c62828;
+    }
+    .status-normal {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+    .status-high {
+      background: #fff3e0;
+      color: #e65100;
+    }
+    .recommendations {
+      background: #e8f5e9;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #b2dfdb;
+      margin-top: 6px;
+      color: #222;
+    }
+    .recommendation-item {
+      margin-bottom: 6px;
+      font-size: 1em;
+    }
+    .footer {
+      text-align: left;
+      color: #888;
+      font-size: 0.95em;
+      margin-top: 18px;
+      padding: 10px 0 0 0;
+      border-top: 1px solid #e0e0e0;
+    }
+    .warning-text {
+      color: #c62828;
+      font-weight: 500;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <a href="/" class="back-button">← Back to Home</a>
+    <img src="static/Logo.png" alt="Poshan Companion Logo" />
+    <h1>Poshan Companion Daily Report</h1>
+    <span class="date">Generated on: {{ datetime.now().strftime('%B %d, %Y') if datetime else '' }}</span>
+  </div>
+  <div class="container">
+    <table class="summary-table">
+      <tr>
+        <th>Metric</th>
+        <th>Value</th>
+        <th>Status</th>
+      </tr>
+      <tr>
+        <td>Total Calories</td>
+        <td>{{ '%.1f'|format(total_calories|float) if total_calories is defined else '0.0' }} kcal</td>
+        <td><span class="badge badge-{{ calorie_intake_level|lower if calorie_intake_level is defined else 'normal' }}">{{ calorie_intake_level if calorie_intake_level is defined else 'Normal' }}</span></td>
+      </tr>
+      {% for nutrient, value in total_nutrients.items() if total_nutrients is defined %}
+      <tr>
+        <td>{{ nutrient }}</td>
+        <td>{{ '%.1f'|format(value|float) }}g</td>
+        {% set percentage = (value / average_daily_requirements[nutrient] * 100)|round(0) if average_daily_requirements is defined and nutrient in average_daily_requirements else 100 %}
+        <td>
+          {% if percentage < 80 %}
+          <span class="badge badge-low">Low ({{ percentage }}%)</span>
+          {% elif percentage > 120 %}
+          <span class="badge badge-high">High ({{ percentage }}%)</span>
+          {% else %}
+          <span class="badge badge-normal">Normal ({{ percentage }}%)</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+
+    <div class="section">
+      <div class="section-title">Daily Nutrient Analysis</div>
+      <div class="graph-container">
+        <img src="{{ graph_file_path }}" alt="Daily Nutrient Intake Comparison" class="graph" />
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Today's Food Log</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Food Item</th>
+            <th>Calories</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for info in user_info if user_info is defined %}
+          <tr>
+            <td>{{ info[1].split()[1].split('.')[0] if info[1] is defined else 'N/A' }}</td>
+            <td>{{ info[2] if info[2] is defined else 'Unknown' }}</td>
+            <td>{{ '%.1f'|format(info[3]|float) if info[3] is defined else '0.0' }} kcal</td>
+            <td>
+              {% set cal = info[3]|float if info[3] is defined else 0.0 %}
+              {% if cal < 300 %}
+              <span class="badge badge-low">Light Meal</span>
+              {% elif cal > 800 %}
+              <span class="badge badge-high">Heavy Meal</span>
+              {% else %}
+              <span class="badge badge-normal">Regular Meal</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Nutrition Assessment</div>
+      {% for nutrient, value in total_nutrients.items() %}
+      {% set percentage = (value / average_daily_requirements[nutrient] * 100)|round(0) %}
+      <div class="nutrient-status status-{% if percentage < 80 %}low{% elif percentage > 120 %}high{% else %}normal{% endif %}">
+        <strong>{{ nutrient }} Status</strong><br>
+        Current intake: {{ value|round(1) }}g ({{ percentage }}% of daily requirement)
+        {% if percentage < 80 %}
+        <div class="warning-text">
+          Your {{ nutrient }} intake is below recommended levels. Consider adding more:
+          {% if nutrient == 'Protein' %}lean meats, eggs, legumes, or dairy products{% elif nutrient == 'Carbs' %}whole grains, fruits, and vegetables{% elif nutrient == 'Fat' %}healthy oils, nuts, and seeds{% endif %}
+        </div>
+        {% elif percentage > 120 %}
+        <div class="warning-text">
+          Your {{ nutrient }} intake is above recommended levels. Consider moderating your intake of
+          {% if nutrient == 'Protein' %}high-protein foods{% elif nutrient == 'Carbs' %}carbohydrate-rich foods{% elif nutrient == 'Fat' %}fatty foods{% endif %}
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="section">
+      <div class="section-title">Recommendations</div>
+      <div class="recommendations">
+        {% if calorie_intake_level == 'Low' %}
+        <div class="recommendation-item">Consider increasing your calorie intake through nutrient-dense foods.</div>
+        {% elif calorie_intake_level == 'High' %}
+        <div class="recommendation-item">Try to moderate portion sizes and choose lower-calorie alternatives when possible.</div>
+        {% endif %}
+        {% for nutrient, value in total_nutrients.items() %}
+        {% set percentage = (value / average_daily_requirements[nutrient] * 100)|round(0) %}
+        {% if percentage < 80 %}
+        <div class="recommendation-item">
+          To increase {{ nutrient }}, try adding:
+          {% if nutrient == 'Protein' %}Greek yogurt, chicken breast, lentils, or quinoa{% elif nutrient == 'Carbs' %}brown rice, sweet potatoes, oats, or bananas{% elif nutrient == 'Fat' %}avocados, olive oil, almonds, or chia seeds{% endif %}
+        </div>
+        {% endif %}
+        {% endfor %}
+        <div class="recommendation-item">Remember to stay hydrated and maintain regular meal times.</div>
+      </div>
+    </div>
+    <div class="footer">
+      Poshan Companion &copy; {{ datetime.now().year if datetime else '' }} &mdash; Your Nutrition Analysis Partner
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if report_type == 'weekly' %}Weekly{% else %}Monthly{% endif %} Nutrition Analysis Report</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 0;
+            color: #222;
+            font-size: 15px;
+            line-height: 1.3;
+        }
+        .header {
+            background: linear-gradient(90deg, #16a085 0%, #1abc9c 100%);
+            color: #fff;
+            padding: 18px 0 12px 0;
+            text-align: left;
+            border-bottom: 3px solid #138d75;
+            padding-left: 40px;
+            position: relative;
+        }
+        .back-button {
+            position: absolute;
+            right: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 8px 16px;
+            background-color: #fff;
+            color: #16a085;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .back-button:hover {
+            background-color: #f1f1f1;
+            transform: translateY(-50%) scale(1.05);
+        }
+        .header img {
+            width: 90px;
+            height: auto;
+            margin-bottom: 6px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .header h1 {
+            margin: 0 0 0 16px;
+            font-size: 1.5em;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+            text-shadow: 1px 1px 2px #138d7533;
+            display: inline-block;
+            vertical-align: middle;
+            color: #222;
+        }
+        .container {
+            max-width: 800px;
+            margin: 18px auto 18px 40px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 12px rgba(22,160,133,0.07);
+            padding: 18px;
+        }
+        .section {
+            margin-bottom: 24px;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .section-title {
+            color: #138d75;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #16a08533;
+        }
+        .graph-container {
+            margin: 20px auto;
+            text-align: center;
+            max-width: 95%;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .graph {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: block;
+            margin: 0 auto;
+        }
+        .nutrient-status {
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+        .status-low {
+            background: #ffebee;
+            border-left: 4px solid #c62828;
+        }
+        .status-normal {
+            background: #e8f5e9;
+            border-left: 4px solid #2e7d32;
+        }
+        .status-high {
+            background: #fff3e0;
+            border-left: 4px solid #e65100;
+        }
+        .recommendations {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        .recommendation-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #ffffff;
+            border-radius: 6px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .recommendation-item strong {
+            color: #138d75;
+        }
+        .warning-text {
+            margin-top: 10px;
+            color: #c62828;
+        }
+        .warning-text ul {
+            margin: 5px 0;
+            padding-left: 20px;
+        }
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .summary-table th {
+            background: #16a085;
+            color: #ffffff;
+            padding: 12px 15px;
+            text-align: left;
+        }
+        .summary-table td {
+            padding: 10px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .summary-table tr:last-child td {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="static/Logo.png" alt="Poshan Companion Logo">
+        <h1>{% if report_type == 'weekly' %}Weekly{% else %}Monthly{% endif %} Nutrition Report</h1>
+        <a href="/home" class="back-button">Back to Home</a>
+    </div>
+
+    <div class="container">
+        <div class="section">
+            <h2 class="section-title">Nutritional Summary</h2>
+            <table class="summary-table">
+                <tr>
+                    <th>Metric</th>
+                    <th>Average Value</th>
+                    <th>Status</th>
+                </tr>
+                <tr>
+                    <td>Calories</td>
+                    <td>{{ '%.1f'|format(avg_calories|float) if avg_calories is defined else '0.0' }} kcal</td>
+                    <td>{{ avg_calorie_status if avg_calorie_status is defined else 'Normal' }}</td>
+                </tr>
+                {% for nutrient, avg in avg_nutrients.items() if avg_nutrients is defined %}
+                <tr>
+                    <td>{{ nutrient }}</td>
+                    <td>{{ '%.1f'|format(avg|float) }}g</td>
+                    <td>{{ nutrient_status[nutrient] if nutrient_status is defined and nutrient in nutrient_status else 'Normal' }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">{% if report_type == 'weekly' %}Weekly{% else %}Monthly{% endif %} Nutrient Trends</h2>
+            <div class="graph-container">
+                <img src="{{ graph_uri }}" alt="Nutrient Trends Graph" class="graph">
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Detailed Analysis</h2>
+            {% for nutrient, status in nutrient_status.items() if nutrient_status is defined %}
+            <div class="nutrient-status status-{{ status|lower }}">
+                <h3>{{ nutrient }}</h3>
+                <p><strong>Status:</strong> {{ status }}</p>
+                
+                {% if status == 'Low' and low_nutrient_diseases is defined and nutrient in low_nutrient_diseases %}
+                <div class="warning-text">
+                    <p><strong>Health Considerations:</strong></p>
+                    <ul>
+                        <li><strong>Potential Risks:</strong> {{ low_nutrient_diseases[nutrient]|join(', ') }}</li>
+                        {% if low_nutrient_effects is defined and nutrient in low_nutrient_effects %}
+                        <li><strong>Common Effects:</strong> {{ low_nutrient_effects[nutrient]|join(', ') }}</li>
+                        {% endif %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">{% if report_type == 'weekly' %}Weekly{% else %}Monthly{% endif %} Recommendations</h2>
+            <div class="recommendations">
+                {% for nutrient, status in nutrient_status.items() if nutrient_status is defined %}
+                {% if status == 'Low' %}
+                <div class="recommendation-item">
+                    <strong>{{ nutrient }} Enhancement:</strong><br>
+                    {% if nutrient == 'Protein' %}
+                    Include more lean meats, fish, eggs, legumes, and dairy products in your diet.
+                    {% elif nutrient == 'Carbs' %}
+                    Add more whole grains, fruits, vegetables, and legumes to your meals.
+                    {% elif nutrient == 'Fat' %}
+                    Incorporate healthy fats from sources like avocados, nuts, seeds, and olive oil.
+                    {% endif %}
+                </div>
+                {% elif status == 'High' %}
+                <div class="recommendation-item">
+                    <strong>{{ nutrient }} Moderation:</strong><br>
+                    {% if nutrient == 'Protein' %}
+                    Consider balancing your protein intake with other nutrients and ensure proper portion sizes.
+                    {% elif nutrient == 'Carbs' %}
+                    Focus on complex carbohydrates and reduce intake of refined sugars and processed foods.
+                    {% elif nutrient == 'Fat' %}
+                    Choose healthy fats while monitoring overall fat intake.
+                    {% endif %}
+                </div>
+                {% endif %}
+                {% endfor %}
+
+                <div class="recommendation-item">
+                    <strong>General Tips:</strong>
+                    <ul>
+                        <li>Maintain regular meal times</li>
+                        <li>Stay hydrated throughout the day</li>
+                        <li>Include a variety of foods in your diet</li>
+                        <li>Consider consulting with a healthcare provider for personalized advice</li>
+                    </ul>
+                </div>
+
+                <div class="recommendation-item">
+                    <strong>{% if report_type == 'weekly' %}Weekly{% else %}Monthly{% endif %} Focus:</strong><br>
+                    {% if report_type == 'weekly' %}
+                    Plan your meals in advance and prep ingredients for better nutrition management.
+                    {% else %}
+                    Look for long-term patterns in your nutrition and make sustainable changes.
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

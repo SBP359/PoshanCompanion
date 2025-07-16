@@ -183,7 +183,12 @@ def get_calorie_intake_level(total_calories, child="Pregnant Women"):
 
 
 def create_and_save_graph(user_nutrients, average_nutrients, file_name):
-    plt.figure(figsize=(10, 5))
+    # Clear any existing plots
+    plt.close('all')
+    
+    # Create new figure with white background
+    plt.figure(figsize=(10, 5), facecolor='white')
+    
     nutrients_names = list(user_nutrients.keys())
     user_values = list(user_nutrients.values())
     average_values = [average_nutrients[k] for k in nutrients_names]
@@ -191,24 +196,36 @@ def create_and_save_graph(user_nutrients, average_nutrients, file_name):
     x = np.arange(len(nutrients_names))
     width = 0.35
 
-    plt.bar(x - width/2, user_values, width, label='Your Intake')
-    plt.bar(x + width/2, average_values, width, label='Required Intake')
+    plt.bar(x - width/2, user_values, width, label='Your Intake', color='#1f77b4')
+    plt.bar(x + width/2, average_values, width, label='Required Intake', color='#2ca02c')
 
     plt.ylabel('Amount (g)')
     plt.title('Daily Nutrient Intake Comparison')
     plt.xticks(x, nutrients_names)
     plt.legend()
+    
+    # Add grid for better readability
+    plt.grid(True, alpha=0.3)
     plt.tight_layout()
     
-    plt.savefig(file_name, dpi=100, bbox_inches='tight')
-    plt.close()
-    return file_name
+    # Generate unique filename using timestamp
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    unique_file_name = file_name.replace('.png', f'_{timestamp}.png')
+    
+    # Save with high quality
+    plt.savefig(unique_file_name, dpi=300, bbox_inches='tight', transparent=False)
+    plt.close()  # Close the figure to free memory
+    
+    return unique_file_name
 
 
 # Daily Report
 @app.route("/daily")
 def daily_report():
     try:
+        import glob
+        import os
+        
         user_info = get_user_info_from_db()
         total_calories = sum(int(float(info[3])) for info in user_info)
         total_nutrients = {"Protein": 0, "Carbs": 0, "Fat": 0}
@@ -217,7 +234,7 @@ def daily_report():
             nutrients = json.loads(info[4])
             for nutrient, value in nutrients.items():
                 if nutrient in total_nutrients:
-                    total_nutrients[nutrient] += value
+                    total_nutrients[nutrient] += float(value)
 
         child = session.get("child", "Pregnant Women")
         if child == "child":
@@ -225,7 +242,16 @@ def daily_report():
         else:
             average_daily_requirements = {"Protein": 50, "Carbs": 300, "Fat": 70}
 
-        # Generate nutrients comparison graph
+        # Clean up old nutrient comparison graphs (keep last 5)
+        graph_files = glob.glob("static/nutrient_intake_comparison_*.png")
+        graph_files.sort(reverse=True)
+        for old_file in graph_files[5:]:  # Keep only the 5 most recent files
+            try:
+                os.remove(old_file)
+            except:
+                pass
+
+        # Generate new graph with unique name
         graph_file_path = create_and_save_graph(
             total_nutrients,
             average_daily_requirements,
